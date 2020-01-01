@@ -15,4 +15,13 @@ _Object$defineProperty(exports, "Button", {
   }
 });
 
+_Object$defineProperty(exports, "Flex", {
+  enumerable: true,
+  get: function get() {
+    return _index2.default;
+  }
+});
+
 var _index = _interopRequireDefault(require("Button/index.tsx"));
+
+var _index2 = _interopRequireDefault(require("Flex/index.tsx"));

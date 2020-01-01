@@ -20,7 +20,7 @@ const colors = {
     }
 }
 const size = {
-    icon:
+    icon: 66
 }
 const vSpace = {
     unit: '4px'

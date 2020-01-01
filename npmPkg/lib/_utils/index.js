@@ -6,10 +6,26 @@ _Object$defineProperty(exports, "__esModule", {
   value: true
 });
 
-exports.logLogo = void 0;
+exports.pick = exports.logLogo = void 0;
 
 var logLogo = function logLogo() {
   return console.log('wa~');
 };
 
 exports.logLogo = logLogo;
+
+var pick = function pick(name) {
+  var rewrite = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+  if (rewrite) {
+    return function (props) {
+      return props[name] || props.theme[name];
+    };
+  }
+
+  return function (props) {
+    return props.theme[name];
+  };
+};
+
+exports.pick = pick;
