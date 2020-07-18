@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.6.3",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "react": "^16.10.1",
     "react-dom": "^16.10.1",
     "react-router": "^5.1.2",
