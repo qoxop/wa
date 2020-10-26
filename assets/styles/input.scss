@@ -1,0 +1,15 @@
+.funky {
+    font: 20px/24px {
+      family: fantasy;
+      weight: bold;
+    }
+}
+$border: 1px solid #666;
+
+@mixin firefox-message($selector) {
+    body.firefox #{$selector}:before {
+      content: "Hi, Firefox users!";
+      border: $border;
+    }
+}
+@include firefox-message(".header");

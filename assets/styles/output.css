@@ -1,0 +1,10 @@
+.funky {
+  font: 20px/24px;
+    font-family: fantasy;
+    font-weight: bold; }
+
+body.firefox .header:before {
+  content: "Hi, Firefox users!";
+  border: 1px solid #666; }
+
+/*# sourceMappingURL=output.css.map */

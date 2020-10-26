@@ -26,7 +26,7 @@ class Result {
 module.exports = function scanner(absPath, options = {}) {
     const list = [];
     const dirList = [];
-    const tree = {$$isDir: true};
+    const tree = {};
     const readdir = (dir, _tree) => {
         dirList.push(dir)
         try {
@@ -41,7 +41,7 @@ module.exports = function scanner(absPath, options = {}) {
                         (options.dirIgnores.length === 0)
                     ) {
                         dirList.push(filepath)
-                        _tree[file] = {$$isDir: true};
+                        _tree[file] = {};
                         readdir(filepath, _tree[file])
                     }
                 } else if (fileStat.isFile()) {
