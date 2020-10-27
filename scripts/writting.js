@@ -2,7 +2,6 @@ const path = require('path');
 const Watcher = require('../modules/fsHelper/watcher');
 const args = require('../modules/args');
 const fs = require('fs');
-
 args.d = (args.d || './.docs');
 
 const docsPath = path.resolve(path.resolve(process.cwd(), args.d));
@@ -13,20 +12,18 @@ const scannerDirs = config.docDirs.map(item => path.resolve(docsPath, './', item
 
 const watcher = new Watcher(scannerDirs)
 
-// const doc = {
-//     name: '',
-//     pathname: '',
-//     pages: [
-//         {
-//             name: '',
-//             pathname: '',
-//             pages: [{
-//                 name: '',
-//                 pathname: ''
-//             }]
-//         }
-//     ]
-// }
+const generateCodeStr = (headers, routes, metadata) => (`
+import getComponents from '@rmdxbook/runtimes/components';
+${headers.join(';\n')}
+
+const { Dynamic } = getComponents();
+
+export const routes = [
+    ${routes.join('\n    ')}
+];
+
+export const metadata = ${JSON.stringify(metadata)};
+`)
 
 function parseTreeToMeta(tree, metaTree, basePath, routes, headers) {
     const keys = Object.keys(tree).sort();
@@ -38,17 +35,11 @@ function parseTreeToMeta(tree, metaTree, basePath, routes, headers) {
             const basename = treeKey.replace(/\.\w*$/, '');
             const pathname = `/${basePath}/${basename}`
             if (config.asyncImport) { // 异步加载
-                routes.push(`   {
-        path: "${pathname}",
-        component: import("@docs/${filepath}")
-    },`);
+                routes.push(`{path: "${pathname}", component: Dynamic(() => import("@docs/${filepath}"))},`);
             } else { // 同步加载
                 const componentName = filepath.replace(/\//g, '_').replace(/\.\w*$/, '');
-                headers.push(`import ${componentName} from "@docs/${filepath}";\n`);
-                routes.push(`   {
-        path: "${pathname}"
-        component: ${componentName}
-    },`);
+                headers.push(`import ${componentName} from "@docs/${filepath}";`);
+                routes.push(`{path: "${pathname}", component: ${componentName}},`);
             }
             if (/^app\.w*/.test(treeKey)) {
                 metaPathname = pathname;
@@ -94,15 +85,11 @@ watcher.onChange((datas) => {
         pre.headers.push(...headers);
         return pre;
     }, {metaTrees: [], routes: [], headers: []});
-    const headerCode = codeData.headers.join('\n');
-    const routesCode = `[\n${codeData.routes.join('\n')}\n]`;
-    const metadataCode = JSON.stringify(codeData.metaTrees);
-    const codeString = `
-${headerCode}
-
-export const routes = ${routesCode};
-
-export const metadata = ${metadataCode};
-`
+   
+    const codeString =  generateCodeStr(
+        codeData.headers,
+        codeData.routes,
+        codeData.metaTrees
+    )
     fs.writeFileSync(path.resolve(__dirname, './lll.js'), codeString);
 })

@@ -1,41 +1,64 @@
+import getComponents from '@rmdxbook/runtimes/components';
+
+
+const {
+    Dynamic
+} = getComponents();
+
 export const routes = [{
         path: "/common/app",
-        component: import("@docs/common/app.mdx")
+        component: Dynamic(() => import("@docs/common/app.mdx"))
+    },
+    {
+        path: "/common/base/app",
+        component: Dynamic(() => import("@docs/common/base/app.mdx"))
+    },
+    {
+        path: "/common/form/app",
+        component: Dynamic(() => import("@docs/common/form/app.mdx"))
     },
     {
         path: "/UI/app",
-        component: import("@docs/UI/app.mdx")
+        component: Dynamic(() => import("@docs/UI/app.mdx"))
     },
     {
         path: "/UI/layout/app",
-        component: import("@docs/UI/layout/app.mdx")
+        component: Dynamic(() => import("@docs/UI/layout/app.mdx"))
     },
     {
         path: "/UI/layout/flexbox",
-        component: import("@docs/UI/layout/flexbox.mdx")
+        component: Dynamic(() => import("@docs/UI/layout/flexbox.mdx"))
     },
     {
         path: "/UI/layout/xxx/app",
-        component: import("@docs/UI/layout/xxx/app.mdx")
+        component: Dynamic(() => import("@docs/UI/layout/xxx/app.mdx"))
     },
     {
         path: "/UI/layout/xxx/bbb",
-        component: import("@docs/UI/layout/xxx/bbb.mdx")
+        component: Dynamic(() => import("@docs/UI/layout/xxx/bbb.mdx"))
     },
     {
         path: "/UI/layout/xxx/test",
-        component: import("@docs/UI/layout/xxx/test.mdx")
+        component: Dynamic(() => import("@docs/UI/layout/xxx/test.mdx"))
     },
     {
         path: "/UI/reset/app",
-        component: import("@docs/UI/reset/app.mdx")
+        component: Dynamic(() => import("@docs/UI/reset/app.mdx"))
     },
 ];
 
 export const metadata = [{
     "name": "通用文档",
     "pathname": "/common/app",
-    "pages": []
+    "pages": [{
+        "name": "base",
+        "pathname": "/common/base/app",
+        "pages": []
+    }, {
+        "name": "form",
+        "pathname": "/common/form/app",
+        "pages": []
+    }]
 }, {
     "name": "样式文档",
     "pathname": "/UI/app",
