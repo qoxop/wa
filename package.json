@@ -1,4 +1,5 @@
 {
+  "name": "mdx-react-paper",
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",

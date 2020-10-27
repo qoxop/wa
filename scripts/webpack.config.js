@@ -3,15 +3,13 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const createStyledComponentsTransformer = require('typescript-plugin-styled-components').default;
 
-const styledComponentsTransformer = createStyledComponentsTransformer();
 const isProd = process.env.NODE_ENV === 'production';
 
 
 const baseConfig = {
     entry: {
-        app: path.resolve(__dirname, '../src/index.tsx')
+        app: path.resolve(__dirname, '../application/index.tsx'),
     },
     output: {
         filename: '[name].[hash].js',
@@ -20,12 +18,15 @@ const baseConfig = {
     },
     module: {
         rules: [{
+            test: /\.mdx?$/,
+            use: [
+                { loader: 'babel-loader' },
+                { loader: '@mdx-js/loader' }
+            ]
+        }, {
             test: /\.tsx?$/,
-            loader: 'awesome-typescript-loader',
-            options: {
-                getCustomTransformers: () => ({ before: [styledComponentsTransformer] })
-            },
-            exclude: /node_modules/
+            loader: { loader: 'babel-loader' },
+            options: {},
         }, {
             test: /\.less$/,
             use: ExtractTextPlugin.extract({
