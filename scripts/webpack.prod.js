@@ -2,7 +2,7 @@ const merge = require('webpack-merge');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const common = require('./webpack.config.js');
 
-module.exports = merge(common, {
+module.exports = ({aliasObj}) => merge(common({aliasObj}), {
     mode: 'production',
     devtool: 'source-map',
     plugins: [

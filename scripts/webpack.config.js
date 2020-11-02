@@ -1,20 +1,23 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const extractLess = new ExtractTextPlugin({
     filename: "[name].[contenthash].css",
     disable: process.env.NODE_ENV === "development"
 });
+const extractScss = new ExtractTextPlugin({
+    filename: "[name].[contenthash].css",
+    disable: process.env.NODE_ENV === "development"
+});
 
 const isProd = process.env.NODE_ENV === 'production';
 
-
-const baseConfig = {
+module.exports = ({aliasObj}) => ({
     entry: {
-        app: path.resolve(__dirname, './application/index.tsx'),
+        app: path.resolve(__dirname, '../application/index.tsx'),
     },
     output: {
         filename: '[name].[hash].js',
@@ -45,6 +48,15 @@ const baseConfig = {
                 use: [
                     {
                         loader: 'css-loader',
+                        options: {
+                            modules: false,
+                            sourceMap: !isProd,
+                            importLoaders: 2,
+                            alias: {
+                                '@imgs': path.resolve(__dirname, '../application/assets/images'),
+                                '@fonts': path.resolve(__dirname, '../application/assets/fonts')
+                            }
+                        }
                     },
                     {loader: "postcss-loader", options: {sourceMap: !isProd}},
                     {loader: "less-loader", options: {
@@ -54,6 +66,27 @@ const baseConfig = {
                             }
                         }
                     }
+                ],
+                fallback: "style-loader",
+            })
+        }, {
+            test: /\.scss$/,
+            use: extractScss.extract({
+                use: [
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: false,
+                            sourceMap: !isProd,
+                            importLoaders: 2,
+                            alias: {
+                                '@imgs': path.resolve(__dirname, '../application/assets/images'),
+                                '@fonts': path.resolve(__dirname, '../application/assets/fonts')
+                            }
+                        }
+                    },
+                    { loader: "postcss-loader", options: {sourceMap: !isProd} },
+                    { loader: "less-loader", options: { sourceMap: !isProd} }
                 ],
                 fallback: "style-loader",
             })
@@ -78,9 +111,10 @@ const baseConfig = {
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js', 'jsx'],
-        alias: {
-            assets: path.resolve(__dirname, '../assets/'),
-        }
+        alias: Object.assign({
+            "@assets": path.resolve(__dirname, '../application/assets'),
+            
+        }, aliasObj)
     },
     optimization: {
         // 代码分割原则，只对 多个入口的共用模块，按需加载的模块(不管是不是多个入口)进行分割。
@@ -109,22 +143,21 @@ const baseConfig = {
                 }
             }
         },
-        // runtimeChunk: true
     },
     plugins: [
-        extractLess,
+        /** 清除输出目录 */
+        new CleanWebpackPlugin(),
         /** 定义运行时可以获得的环境变量 */
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
             'process.env.TEST': 'true'
         }),
-        /** 清除输出目录 */
-        new CleanWebpackPlugin(),
+        extractLess,
+        extractScss,
         /** 生成一份引用 bundle 的html文件 */
         new HtmlWebpackPlugin({
             template:  'index.html',
             filename: 'index.html',
         }),
     ]
-};
-module.exports = baseConfig
+});

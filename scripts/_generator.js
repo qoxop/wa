@@ -13,8 +13,6 @@ const config = require(configPath);
 const scannerDirs = config.docDirs.map(item => path.resolve(docsPath, './', item.path))
 const watcher = new Watcher(scannerDirs);
 
-const writing = require('./scripts/start');
-
 // 生成代码
 const generateCodeStr = (headers, routes, metadata) => (`
 import getComponents from '@inner-app/components/helpers';
@@ -77,39 +75,55 @@ function parseTreeToMeta(tree, metaTree, basePath, routes, headers) {
     return metaPages;
 }
 
-watcher.onChange((datas) => {
-    // 解析文件树
-    const codeData = datas.map((data, index) => {
-        const {tree} = data;
-        const headers = [];
-        const routes = [];
-        const metaTree = {name: config.docDirs[index].name};
-        parseTreeToMeta(
-            tree,
-            metaTree,
-            config.docDirs[index].path,
-            routes,
-            headers
+const once = (cb) => {
+    return (...args) => {
+        if (cb) {
+            cb(...args);
+            cb = false;
+        }
+    }
+}
+module.exports = function(callback) {
+    const cbOnce = once(callback)
+    watcher.onChange((datas) => {
+        // 解析文件树
+        const codeData = datas.map((data, index) => {
+            const {tree} = data;
+            const headers = [];
+            const routes = [];
+            const metaTree = {name: config.docDirs[index].name};
+            parseTreeToMeta(
+                tree,
+                metaTree,
+                config.docDirs[index].path,
+                routes,
+                headers
+            );
+            return {metaTree, routes, headers}
+        }).reduce((pre, cur) => {
+            const {metaTree, routes, headers} = cur;
+            pre.metaTrees.push(metaTree);
+            pre.routes.push(...routes);
+            pre.headers.push(...headers);
+            return pre;
+        }, {metaTrees: [], routes: [], headers: []});
+    
+        // 生成代码
+        const codeString =  generateCodeStr(
+            codeData.headers,
+            codeData.routes,
+            codeData.metaTrees
+        )
+        // 写入代码
+        fs.writeFileSync(
+            path.resolve(__dirname, './application/.app-data/index.js'),
+            codeString
         );
-        return {metaTree, routes, headers}
-    }).reduce((pre, cur) => {
-        const {metaTree, routes, headers} = cur;
-        pre.metaTrees.push(metaTree);
-        pre.routes.push(...routes);
-        pre.headers.push(...headers);
-        return pre;
-    }, {metaTrees: [], routes: [], headers: []});
-
-    // 生成代码
-    const codeString =  generateCodeStr(
-        codeData.headers,
-        codeData.routes,
-        codeData.metaTrees
-    )
-    // 写入代码
-    fs.writeFileSync(
-        path.resolve(__dirname, './application/.app-data/index.js'),
-        codeString
-    );
-})
-// setTimeout(writing, 500)
+        cbOnce({
+            aliasObj: {
+                "@inner-app": path.resolve(__dirname, '../application'),
+                "@docs": docsPath,
+            }
+        })
+    })
+}

@@ -3,7 +3,7 @@ const merge = require('webpack-merge');
 const common = require('./webpack.config.js');
 const path = require('path')
 
-module.exports = merge(common, {
+module.exports = ({aliasObj}) => merge(common({aliasObj}), {
     mode: 'development',
     devtool: 'eval-source-map', // 设置开发环境 sourceMap 品质
     devServer: {
