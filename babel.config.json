@@ -1,4 +1,38 @@
 {
-    "presets": [],
-    "plugins": []
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "modules": false,
+                "useBuiltIns": "entry",
+                "corejs": 3
+            }
+        ],
+        "@babel/preset-react",
+        [
+            "@babel/preset-typescript",
+            {
+                "isTSX": true,
+                "allExtensions": true,
+                "jsxPragma": "React",
+                "allowNamespaces": true,
+                "allowDeclareFields": false
+            }
+        ]
+    ],
+    "plugins": [
+        [
+            "@babel/plugin-proposal-decorators",
+            {
+                "decoratorsBeforeExport": true,
+                "legacy": true
+            }
+        ],
+        [
+            "@babel/plugin-proposal-class-properties",
+            { 
+                "loose" : true
+            }
+        ]
+    ]
   }

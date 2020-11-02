@@ -4,12 +4,17 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
+const extractLess = new ExtractTextPlugin({
+    filename: "[name].[contenthash].css",
+    disable: process.env.NODE_ENV === "development"
+});
+
 const isProd = process.env.NODE_ENV === 'production';
 
 
 const baseConfig = {
     entry: {
-        app: path.resolve(__dirname, '../application/index.tsx'),
+        app: path.resolve(__dirname, './application/index.tsx'),
     },
     output: {
         filename: '[name].[hash].js',
@@ -20,33 +25,37 @@ const baseConfig = {
         rules: [{
             test: /\.mdx?$/,
             use: [
-                { loader: 'babel-loader' },
+                { 
+                    loader: 'babel-loader',
+                    options: { cacheDirectory: true }
+                },
                 { loader: '@mdx-js/loader' }
             ]
         }, {
-            test: /\.tsx?$/,
-            loader: { loader: 'babel-loader' },
-            options: {},
+            test: /\.(t|j)sx?$/,
+            use: [ 
+                {
+                    loader: 'babel-loader',
+                    options: { cacheDirectory: true }
+                }
+            ],
         }, {
             test: /\.less$/,
-            use: ExtractTextPlugin.extract({
-                fallback: "style-loader",
+            use: extractLess.extract({
                 use: [
                     {
                         loader: 'css-loader',
-                        // 支持 css moduel， 配置局部名字规则
-                        options: {
-                            importLoaders: 2,
-                            modules: {
-                                mode: 'local',
-                                localIdentName: '[path][name]__[local]--[hash:base64:5]',
-                            },
-                            sourceMap: !isProd,
-                        }
                     },
                     {loader: "postcss-loader", options: {sourceMap: !isProd}},
-                    {loader: "less-loader", options: { sourceMap: !isProd }}
-                ]
+                    {loader: "less-loader", options: {
+                            sourceMap: !isProd,
+                            lessOptions: {
+                                rewriteUrls: 'local', // 使得 less 支持相对路径引入文件
+                            }
+                        }
+                    }
+                ],
+                fallback: "style-loader",
             })
         }, {
             test: /\.(png|jpg|gif)$/, // 处理图片
@@ -103,12 +112,12 @@ const baseConfig = {
         // runtimeChunk: true
     },
     plugins: [
+        extractLess,
         /** 定义运行时可以获得的环境变量 */
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
             'process.env.TEST': 'true'
         }),
-        new ExtractTextPlugin("styles/styles.css"),
         /** 清除输出目录 */
         new CleanWebpackPlugin(),
         /** 生成一份引用 bundle 的html文件 */

@@ -3,6 +3,7 @@ import { MDXProvider } from '@mdx-js/react';
 import * as appdata from './.app-data';
 import mdxComponents from './mdx-components';
 import App from './app';
+import './polyfill'
 
 const Main = appdata.CustomApp || App;
 const components = Object.assign(
