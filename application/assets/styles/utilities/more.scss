@@ -1,0 +1,25 @@
+@import "../variables/typography.scss";
+
+.inline-block {
+    display: inline-block !important;
+}
+.block {
+    display: block !important;
+}
+
+.absolute {
+    position: absolute !important;
+}
+.relative {
+    position: relative !important;
+}
+
+.t1 { font-size: $t1 !important; }
+.t2 { font-size: $t2 !important; }
+.t3 { font-size: $t3 !important; }
+.t4 { font-size: $t4 !important; }
+.t5 { font-size: $t5 !important; }
+.t6 { font-size: $t6 !important; }
+
+.bold { font-weight: 600; }
+.bolder { font-weight: 900; }

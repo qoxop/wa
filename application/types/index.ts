@@ -1,11 +1,12 @@
 export interface MetaTree {
     name: string,
     pathname?: string,
+    root?: boolean,
     pages?: MetaTree[],
 }
 export interface RouteItem {
     path: string,
-    component: Function
+    component: (props: any) => JSX.Element
 }
 export interface AppFcProps {
     metadata: MetaTree | MetaTree[]

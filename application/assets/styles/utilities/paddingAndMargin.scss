@@ -1,0 +1,22 @@
+@mixin paddingAndMarginClassProvider($max, $min, $step) {
+    @while $max >= $min {
+        // padding
+        .pd#{$max} { padding: $max * 1px !important;}
+        .pt#{$max} { padding-top: $max * 1px !important;}
+        .pb#{$max} { padding-bottom: $max * 1px !important; }
+        .ptb#{$max} { padding-top: $max * 1px  !important; padding-bottom: $max * 1px !important; }
+        .pl#{$max} {padding-left: $max * 1px !important;}
+        .pr#{$max} { padding-right: $max * 1px !important; }
+        .plr#{$max} { padding-left: $max * 1px !important; padding-right: $max * 1px !important;}
+        // margin
+        .mg#{$max} { margin: $max * 1px !important;}
+        .mt#{$max} { margin-top: $max * 1px !important;}
+        .mb#{$max} { margin-bottom: $max * 1px !important;}
+        .mtb#{$max} { margin-top: $max * 1px !important; margin-bottom: $max * 1px !important; }
+        .ml#{$max} { margin-left: $max * 1px !important; }
+        .mr#{$max} { margin-right: $max * 1px !important; }
+        .mlr#{$max} {   margin-left: $max * 1px !important; margin-right: $max * 1px !important; }
+        $max: $max - $step;
+    }
+}
+@include paddingAndMarginClassProvider(40, 0, 1)

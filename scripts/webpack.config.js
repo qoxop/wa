@@ -2,16 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-
-const extractLess = new ExtractTextPlugin({
-    filename: "[name].[contenthash].css",
-    disable: process.env.NODE_ENV === "development"
-});
-const extractScss = new ExtractTextPlugin({
-    filename: "[name].[contenthash].css",
-    disable: process.env.NODE_ENV === "development"
-});
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -44,52 +35,51 @@ module.exports = ({aliasObj}) => ({
             ],
         }, {
             test: /\.less$/,
-            use: extractLess.extract({
-                use: [
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            modules: false,
-                            sourceMap: !isProd,
-                            importLoaders: 2,
-                            alias: {
-                                '@imgs': path.resolve(__dirname, '../application/assets/images'),
-                                '@fonts': path.resolve(__dirname, '../application/assets/fonts')
-                            }
-                        }
-                    },
-                    {loader: "postcss-loader", options: {sourceMap: !isProd}},
-                    {loader: "less-loader", options: {
-                            sourceMap: !isProd,
-                            lessOptions: {
-                                rewriteUrls: 'local', // 使得 less 支持相对路径引入文件
-                            }
+            use: [
+                {
+                    loader: MiniCssExtractPlugin.loader,
+                    options: {
+                        modules: false,
+                        publicPath: '/styles'
+                    }
+                },
+                {
+                    loader: 'css-loader',
+                    options: {
+                        modules: false,
+                        sourceMap: !isProd,
+                        importLoaders: 2,
+                    }
+                },
+                {loader: "postcss-loader", options: {sourceMap: !isProd}},
+                {loader: "less-loader", options: {
+                        sourceMap: !isProd,
+                        lessOptions: {
+                            rewriteUrls: 'local', // 使得 less 支持相对路径引入文件
                         }
                     }
-                ],
-                fallback: "style-loader",
-            })
+                }
+            ]
         }, {
             test: /\.scss$/,
-            use: extractScss.extract({
-                use: [
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            modules: false,
-                            sourceMap: !isProd,
-                            importLoaders: 2,
-                            alias: {
-                                '@imgs': path.resolve(__dirname, '../application/assets/images'),
-                                '@fonts': path.resolve(__dirname, '../application/assets/fonts')
-                            }
-                        }
-                    },
-                    { loader: "postcss-loader", options: {sourceMap: !isProd} },
-                    { loader: "less-loader", options: { sourceMap: !isProd} }
-                ],
-                fallback: "style-loader",
-            })
+            use: [
+                {
+                    loader: MiniCssExtractPlugin.loader,
+                    options: {
+                        publicPath: '/styles'
+                    }
+                },
+                {
+                    loader: 'css-loader',
+                    options: {
+                        modules: false,
+                        sourceMap: !isProd,
+                        importLoaders: 2,
+                    }
+                },
+                { loader: "postcss-loader", options: {sourceMap: !isProd} },
+                { loader: "sass-loader", options: { sourceMap: !isProd} }
+            ]
         }, {
             test: /\.(png|jpg|gif)$/, // 处理图片
             loader: 'url-loader',
@@ -116,44 +106,16 @@ module.exports = ({aliasObj}) => ({
             
         }, aliasObj)
     },
-    optimization: {
-        // 代码分割原则，只对 多个入口的共用模块，按需加载的模块(不管是不是多个入口)进行分割。
-        // 'all'（所有代码块，），'async'（按需加载的代码块），'initial'（初始化代码块）
-        splitChunks: {
-            chunks: "all",
-            minSize: 30000, // 这里限制的只是 多个入口的共用模块 的分割规则，共用的块必须到达这个大小才会被分割
-            minChunks: 1, // 目测这个地方没什么用处，待考究
-            maxAsyncRequests: 5, // 按需加载时的最大并行请求数量，超过了就不再分割
-            maxInitialRequests: 3, // 入口点上的最大并行请求数
-            automaticNameDelimiter: '~', // 名字分割线
-            name: true,
-            cacheGroups: {
-                vendors: {
-                    test: /[\\/]node_modules[\\/]/,
-                    priority: -10,
-                    chunks: "all",
-                    minChunks: 1, // 这个地方起作用,  在分割之前，这个代码块最小应该被引用的次数（译注：保证代码块复用性，默认配置的策略是不需要多次引用也可以被分割）
-                },
-                default: {
-                    minChunks: 2,
-                    minSize: 30000, // default 30k
-                    priority: -20,
-                    reuseExistingChunk: true,
-                    chunks: 'all'
-                }
-            }
-        },
-    },
+
     plugins: [
         /** 清除输出目录 */
         new CleanWebpackPlugin(),
         /** 定义运行时可以获得的环境变量 */
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-            'process.env.TEST': 'true'
+            'process.env.TEST': 'false'
         }),
-        extractLess,
-        extractScss,
+        new MiniCssExtractPlugin(),
         /** 生成一份引用 bundle 的html文件 */
         new HtmlWebpackPlugin({
             template:  'index.html',

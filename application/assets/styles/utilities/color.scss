@@ -1,0 +1,47 @@
+@import '../variables/color.scss';
+
+
+.red {
+    color: $red;
+}  
+.orange {
+    color: $orange;
+}
+.green {
+    color: $green;
+}
+.yellow {
+    color: $yellow;
+}
+.black {
+    color: $black;
+}
+.grey {
+    color: $grey;
+}
+.s-grey {
+    color: $s-grey;
+}
+.xs-grey {
+    color: $xs-grey;
+}
+.white {
+    color: $white;
+}
+
+.error {
+    color: $error;
+}
+.warning {
+    color: $warning;
+}
+.success {
+    color: $success;
+}
+
+.bg-white {
+    background-color: $bg-color-1;
+}
+.bg-page {
+    background-color: $bg-color-page;
+}

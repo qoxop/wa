@@ -1,0 +1,21 @@
+.absolute {
+    position: absolute !important;
+}
+.absolute-full {
+    @extend .absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    .un-top { top: auto; }
+    .un-bottom { bottom: auto; }
+    .un-left { left: auto; }
+    .un-right { right: auto; }
+
+    .set-bottom-10 { bottom: 10px !important; }
+    .set-top-10 { top: 10px !important; }
+    .set-left-10 { left: 10px !important; }
+    .set-right-10 { right: 10px !important; }
+}

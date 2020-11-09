@@ -1,23 +1,23 @@
-const webpack = require('webpack')
-const merge = require('webpack-merge');
-const common = require('./webpack.config.js');
-const path = require('path')
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const getCommonCfg = require('./webpack.config');
+const { merge } = require('webpack-merge')
 
-module.exports = ({aliasObj}) => merge(common({aliasObj}), {
-    mode: 'development',
-    devtool: 'eval-source-map', // 设置开发环境 sourceMap 品质
-    devServer: {
-        /** 开发服务器配置，详细使用参考文档 */
-        contentBase: path.join(__dirname, "../dist"),
-        compress: true,
-        port: 9999,
-        hot: true,
-        open: true,
-        inline: true,
-    },
-    plugins: [
-        /** 模块热重载载，需配合相关loader使用 */
-        new webpack.NamedModulesPlugin(),
-        new webpack.HotModuleReplacementPlugin()
-    ]
-});
+process.env.NODE_ENV = 'development';
+
+module.exports = (meta) => {
+    const commonCfg = getCommonCfg(meta);
+    const config = merge(commonCfg, {
+        mode: 'development',
+        devtool: 'eval-source-map', // 设置开发环境 sourceMap 品质
+        plugins: [
+            new webpack.DefinePlugin({
+                'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+                'process.env.TEST': 'true'
+            })
+        ]
+    });
+    return config;
+}

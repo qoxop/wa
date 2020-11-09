@@ -1,3 +1,4 @@
+import React from 'react';
 import ReactDom from 'react-dom';
 import { MDXProvider } from '@mdx-js/react';
 import * as appdata from './.app-data';

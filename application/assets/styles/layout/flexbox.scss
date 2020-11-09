@@ -1,0 +1,66 @@
+// flex: 1 ~ $max
+@mixin flexNum($max) {
+    @while $max > 0 {
+        > .flex-#{$max} {
+            flex: $max;
+        }
+        $max: $max - 1;
+    }
+}
+
+// order
+@mixin orderNum($max) {
+    @while $max > 0 {
+        > .order-#{$max} {
+            order: $max;
+        }
+        $max: $max - 1;
+    }
+}
+
+// flex-n-m
+@mixin flexRate($max) {
+    @while $max > 1 {
+        $min: 1;
+        @while $min < $max {
+            > .flex-#{$min}-#{$max} {
+                flex-basis: floor(($min / $max) * 10000) * 0.01%;
+                flex-shrink: 1;
+            }
+            $min: $min + 1;
+        }
+        $max: $max - 1;
+    }
+}
+.min-height-100 {
+    min-height: 99%;
+    overflow-y: visible;
+    box-sizing: border-box;
+}
+.flexbox {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    justify-content: flex-start;
+    // 修改方向
+    &.f-colunm { flex-direction: column;}
+    &.f-reverse-colunm { flex-direction: column-reverse; }
+    &.f-reverse-row {flex-direction: row-reverse;}
+
+    // 修改 justify-content 属性， 项目在主轴方向上的对齐方式
+    &.f-end, &.f-right, &.f-bottom { justify-content: flex-end; }
+    &.f-center { justify-content: center; }
+    &.f-between { justify-content: space-between; }
+    &.f-around { justify-content: space-around; }
+    // 修改 align-items 属性
+    &.align-start, &.align-top, &.align-left { align-items: flex-start; }
+    &.align-start, &.align-top, &.align-left { align-items: flex-start; }
+    &.align-end, &.align-bottom, &.align-right { align-items: flex-end; }
+    &.middle { align-items: center; }
+    &.baseline { align-items: baseline; }
+    &.f-wrap { flex-wrap: wrap; }
+    // 子元素样式
+    @include flexNum(10);
+    @include flexRate(10);
+    @include orderNum(10);
+}

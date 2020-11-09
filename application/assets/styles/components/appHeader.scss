@@ -1,0 +1,28 @@
+@import "../variables/typography.scss";
+
+.app-header {
+    .nav-link {
+        color: #fff;
+        text-decoration: none;
+        &:hover {
+            color: #efefef;
+        }
+        &-selected {
+            &::before {
+                content: "> ";
+                font-size: $t4;
+                color: #d874a7;
+            }
+            &::after {
+                content: " <";
+                font-size: $t4;
+                color: #d874a7;
+            }
+        }
+    }
+    .app-header-bar {
+        background-color: rgba(191, 64, 128, 0.9);
+        padding: 10px;
+    }
+    
+}

@@ -1,0 +1,31 @@
+@mixin heightMaker($max, $min, $step, $skips) {
+    @while $max >= $min {
+        $skip: false;
+        @each $var in $skips {
+            $skip: $skip or (($max % $var) == 0);
+            
+        }
+        @if $skip == false {
+            .h#{$max} { height: $max * 1px !important; }
+            .h#{$max}-lh {height: $max * 1px !important; line-height: $max * 1px !important;}
+        }
+        $max: $max - $step;
+    }
+}
+@mixin widthMaker($max, $min, $step, $skips) {
+    @while $max >= $min {
+        $skip: false;
+        @each $var in $skips {
+            $skip: $skip or (($max % $var) == 0);
+            
+        }
+        @if $skip == false {
+            .w#{$max} { width: $max * 1px !important; }
+        }
+        $max: $max - $step;
+    }
+}
+@include heightMaker(40, 10, 1, ());
+
+@include widthMaker(40, 10, 1, ());
+

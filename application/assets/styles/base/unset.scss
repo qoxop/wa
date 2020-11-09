@@ -1,0 +1,16 @@
+@import "../variables/color.scss";
+
+.unset-ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    > li {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+}
+.unset-link {
+    text-decoration: none;
+    color: inherit;
+}

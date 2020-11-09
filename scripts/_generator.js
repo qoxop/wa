@@ -8,17 +8,18 @@ const args = require('./libs/args');
 args.d = (args.d || './.docs');
 
 const docsPath = path.resolve(path.resolve(process.cwd(), args.d));
-const configPath= path.resolve(docsPath, './config.js');
+const configPath = path.resolve(docsPath, './config.js');
 const config = require(configPath);
 const scannerDirs = config.docDirs.map(item => path.resolve(docsPath, './', item.path))
+
 const watcher = new Watcher(scannerDirs);
 
 // 生成代码
 const generateCodeStr = (headers, routes, metadata) => (`
 import getComponents from '@inner-app/components/helpers';
 ${headers.join(';\n')}
-${config.customApp ? `import CustomApp from "${config.customApp}";` : ''}
-${config.customMdxComponents ? `import CustomMdxComponents from "${config.customMdxComponents}";` : ''}
+${config.customApp ? `import CustomApp from "${config.customApp}";` : 'const CustomApp = null;'}
+${config.customMdxComponents ? `import CustomMdxComponents from "${config.customMdxComponents}";` : 'const CustomMdxComponents = null;'}
 
 const { Dynamic } = getComponents();
 
@@ -31,13 +32,30 @@ const metadata = ${JSON.stringify(metadata)};
 export {
     routes,
     metadata,
-    ${config.customApp ? 'CustomApp,' : ''}
-    ${config.customMdxComponents ? 'CustomMdxComponents,' : ''}
+    CustomApp,
+    CustomMdxComponents,
 }
 `)
 
 function parseTreeToMeta(tree, metaTree, basePath, routes, headers) {
-    const keys = Object.keys(tree).sort();
+    const keys = Object.keys(tree).filter(k => {
+        // 获取其他后缀的文件
+        if (typeof tree[k] === 'string' && !/\.(mdx|md|js|ts|jsx|tsx)$/.test(k)) {
+            return false;
+        }
+        // 过滤空文件夹
+        if (Object.keys(tree[k]).length < 1) {
+            return false;
+        }
+        return true;
+    });
+    let info = {};
+    if (tree["info.json"]) { // 排序
+        info = require(path.resolve(docsPath, './', basePath, './info.json'));
+        keys.sort((a, b) => {
+            return (info[a] || {sort: 0}).sort - (info[b] || {sort: 0}).sort
+        });
+    }
     let metaPages = [];
     let metaPathname = null;
     keys.map(treeKey => {
@@ -56,7 +74,7 @@ function parseTreeToMeta(tree, metaTree, basePath, routes, headers) {
                 metaPathname = pathname;
             } else {
                 metaPages.push({
-                    name: basename,
+                    name: info[treeKey] && info[treeKey].name ? info[treeKey].name : basename,
                     pathname,
                 })
             }
@@ -64,7 +82,7 @@ function parseTreeToMeta(tree, metaTree, basePath, routes, headers) {
             const subTree = tree[treeKey];
             const subTreeKeys = Object.keys(subTree);
             if (subTreeKeys.length) {
-                const subMetaTree = {name: treeKey}
+                const subMetaTree = {name: info[treeKey] && info[treeKey].name ? info[treeKey].name : treeKey}
                 parseTreeToMeta(subTree, subMetaTree, `${basePath}/${treeKey}`, routes, headers);
                 metaPages.push(subMetaTree);
             }
@@ -91,7 +109,7 @@ module.exports = function(callback) {
             const {tree} = data;
             const headers = [];
             const routes = [];
-            const metaTree = {name: config.docDirs[index].name};
+            const metaTree = {name: config.docDirs[index].name, root: !config.homePage && index === 0};
             parseTreeToMeta(
                 tree,
                 metaTree,
@@ -107,7 +125,11 @@ module.exports = function(callback) {
             pre.headers.push(...headers);
             return pre;
         }, {metaTrees: [], routes: [], headers: []});
-    
+        // 设置根路由
+        if (config.homePage) {
+            const homePagePath =  path.resolve(docsPath, config.homePage).replace(docsPath, '');
+            codeData.routes.unshift(`{path: "/", component: Dynamic(() => import("@docs/${homePagePath}"))},`)
+        }
         // 生成代码
         const codeString =  generateCodeStr(
             codeData.headers,
@@ -116,7 +138,7 @@ module.exports = function(callback) {
         )
         // 写入代码
         fs.writeFileSync(
-            path.resolve(__dirname, './application/.app-data/index.js'),
+            path.resolve(__dirname, '../application/.app-data/index.js'),
             codeString
         );
         cbOnce({
