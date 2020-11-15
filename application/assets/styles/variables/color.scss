@@ -1,3 +1,6 @@
+
+$brand-color: var(--brand-color);
+
 /*
 * 文本颜色集合，由深到浅
 */
@@ -21,7 +24,7 @@ $bg-color-3: #F5F5F5;
 $bg-color-4: #F0F0F0;
 $bg-color-mask: rgba(0, 0, 0, 0.6);
 $bg-color-toast: rgba(51, 51, 51, 1);
-$bg-color-page: $bg-color-3;
+$bg-color-page: #FFFFFF;
 
 // 颜色名
 $red:     #FF4D4F;

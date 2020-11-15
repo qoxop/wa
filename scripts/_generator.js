@@ -74,21 +74,25 @@ function parseTreeToMeta(tree, metaTree, basePath, routes, headers) {
                 metaPathname = pathname;
             } else {
                 metaPages.push({
-                    name: info[treeKey] && info[treeKey].name ? info[treeKey].name : basename,
+                    name: basename,
                     pathname,
+                    ...(info[treeKey] || {}),
                 })
             }
         } else {
             const subTree = tree[treeKey];
             const subTreeKeys = Object.keys(subTree);
             if (subTreeKeys.length) {
-                const subMetaTree = {name: info[treeKey] && info[treeKey].name ? info[treeKey].name : treeKey}
+                const subMetaTree = {
+                    name: treeKey,
+                    ...(info[treeKey] || {}),
+                }
                 parseTreeToMeta(subTree, subMetaTree, `${basePath}/${treeKey}`, routes, headers);
                 metaPages.push(subMetaTree);
             }
         }
     })
-    metaTree.pathname = metaPathname;
+    metaTree.pathname = metaPathname || metaPages[0].pathname;
     metaTree.pages = metaPages;
     return metaPages;
 }

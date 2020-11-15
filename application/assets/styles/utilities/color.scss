@@ -1,6 +1,11 @@
 @import '../variables/color.scss';
 
-
+.c-skin {
+    color: $brand-color;
+}
+.bg-skin {
+    color: $brand-color;
+}
 .red {
     color: $red;
 }  
@@ -44,4 +49,10 @@
 }
 .bg-page {
     background-color: $bg-color-page;
+}
+.bg-grey {
+    background-color: $grey;
+}
+.bg-s-grey {
+    background-color: $s-grey;
 }

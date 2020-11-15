@@ -173,12 +173,17 @@ class Watcher {
             } else if ((data.list || []).includes(fileKey)) { // file delete
                 this._runSubscriber(fileKey, 'delete-file', index)
             } else {
-                const fStat = fs.statSync(fileKey);
-                if (fStat.isDirectory()) { // create dir
-                    this._runSubscriber(fileKey, 'create-dir', index);
-                } else if (fStat.isFile()) { // create file
-                    this._runSubscriber(fileKey, 'create-file', index);
+                try {
+                    const fStat = fs.statSync(fileKey);
+                    if (fStat.isDirectory()) { // create dir
+                        this._runSubscriber(fileKey, 'create-dir', index);
+                    } else if (fStat.isFile()) { // create file
+                        this._runSubscriber(fileKey, 'create-file', index);
+                    }
+                } catch (error) {
+                    
                 }
+                
             }
         }
     }

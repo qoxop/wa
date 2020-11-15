@@ -25,7 +25,10 @@
         $max: $max - $step;
     }
 }
-@include heightMaker(40, 10, 1, ());
-
-@include widthMaker(40, 10, 1, ());
+@include heightMaker(60, 10, 1, ());
+.h-full {
+    height: 100%;
+    overflow: auto;
+}
+@include widthMaker(60, 10, 1, ());
 

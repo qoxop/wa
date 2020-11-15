@@ -3,6 +3,7 @@ export interface MetaTree {
     pathname?: string,
     root?: boolean,
     pages?: MetaTree[],
+    open?: boolean,
 }
 export interface RouteItem {
     path: string,

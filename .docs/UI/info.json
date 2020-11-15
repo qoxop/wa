@@ -1,4 +1,4 @@
 {
     "reset": {"sort": 1, "name": "重置"},
-    "layout": {"sort": 2, "name": "布局"}
+    "layout": {"sort": 2, "name": "布局", "open": true}
 }
