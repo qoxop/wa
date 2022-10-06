@@ -16,6 +16,9 @@ const Home: NextPage = () => {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
+        <p>
+          <a href='api/github/get-auth-url'>github login</a>
+        </p>
 
         <p className={styles.description}>
           Get started by editing{' '}
